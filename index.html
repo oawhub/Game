@@ -17,42 +17,97 @@
         margin-bottom: 20px;
         font-weight: bold;
       }
-      #clickButton {
+      .button-container {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+      }
+      .game-button {
+        width: 100px;
+        height: 100px;
         font-size: 20px;
-        padding: 15px 30px;
         cursor: pointer;
         background-color: #4caf50;
         border: none;
         border-radius: 10px;
         color: white;
-        transition: transform 0.1s ease, background-color 0.3s;
+        transition: background-color 0.3s, transform 0.1s;
       }
-      #clickButton:hover {
-        background-color: #45a049;
-      }
-      #clickButton:active {
-        transform: scale(0.9);
+      .game-button.active {
+        background-color: yellow;
+        color: black;
       }
     </style>
   </head>
   <body>
-    <h1>Кликер-игра</h1>
+    <h1>Реакция-кликер</h1>
     <p id="score">Очки: 0</p>
-    <button id="clickButton">Кликни меня!</button>
+    <div class="button-container">
+      <button class="game-button" id="btn1"></button>
+      <button class="game-button" id="btn2"></button>
+      <button class="game-button" id="btn3"></button>
+      <button class="game-button" id="btn4"></button>
+      <button class="game-button" id="btn5"></button>
+    </div>
 
     <audio id="clickSound" src="click.mp3"></audio>
+    <audio id="errorSound" src="error.mp3"></audio>
 
     <script>
       let score = 0;
+      let speed = 1000;
+      let activeButton = null;
       const scoreDisplay = document.getElementById("score");
-      const clickButton = document.getElementById("clickButton");
+      const buttons = document.querySelectorAll(".game-button");
       const clickSound = document.getElementById("clickSound");
+      const errorSound = document.getElementById("errorSound");
 
-      clickButton.addEventListener("click", () => {
-        score++;
+      function getRandomButton() {
+        return buttons[Math.floor(Math.random() * buttons.length)];
+      }
+
+      function highlightRandomButton() {
+        if (activeButton) {
+          activeButton.classList.remove("active");
+        }
+        activeButton = getRandomButton();
+        activeButton.classList.add("active");
+      }
+
+      function startGame() {
+        score = 0;
+        speed = 1000;
         scoreDisplay.textContent = "Очки: " + score;
-        clickSound.play();
+        highlightRandomButton();
+        gameLoop();
+      }
+
+      function gameLoop() {
+        setTimeout(() => {
+          highlightRandomButton();
+          gameLoop();
+        }, speed);
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          if (button === activeButton) {
+            score++;
+            scoreDisplay.textContent = "Очки: " + score;
+            clickSound.play();
+            speed = Math.max(300, speed - 50);
+          } else {
+            errorSound.play();
+            alert("Ошибка! Игра начинается заново.");
+            startGame();
+          }
+        });
       });
+
+      startGame();
     </script>
   </body>
 </html>
