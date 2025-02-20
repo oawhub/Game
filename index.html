@@ -20,15 +20,15 @@
       }
       .button-container {
         display: grid;
-        grid-template-columns: repeat(5, 104px);
-        grid-template-rows: repeat(5, 104px);
+        grid-template-columns: repeat(5, 135px);
+        grid-template-rows: repeat(5, 135px);
         gap: 10px;
         justify-content: center;
         align-items: center;
       }
       .game-button {
-        width: 104px;
-        height: 104px;
+        width: 135px;
+        height: 135px;
         font-size: 26px;
         cursor: pointer;
         background-color: #4caf50;
@@ -41,18 +41,25 @@
         background-color: yellow;
         color: black;
       }
-      #speed-display {
+      #speed-display,
+      #record-display {
         position: absolute;
-        bottom: 20px;
-        left: 20px;
         text-align: center;
       }
-      .speed-label {
+      #speed-display {
+        bottom: 20px;
+        left: 20px;
+      }
+      #record-display {
+        top: 100px;
+        left: 20px;
+      }
+      .display-label {
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 5px;
       }
-      .speed-box {
+      .display-box {
         font-size: 24px;
         font-weight: bold;
         width: 80px;
@@ -81,8 +88,12 @@
     <p id="score">Очки: 0</p>
     <div class="button-container" id="buttonContainer"></div>
     <div id="speed-display">
-      <div class="speed-label">SPEED</div>
-      <div class="speed-box" id="speed-box">1</div>
+      <div class="display-label">SPEED</div>
+      <div class="display-box" id="speed-box">1</div>
+    </div>
+    <div id="record-display">
+      <div class="display-label">RECORDS</div>
+      <div class="display-box" id="record-box">0</div>
     </div>
 
     <audio id="clickSound" src="click.mp3"></audio>
@@ -91,10 +102,12 @@
     <script>
       let score = 0;
       let speedLevel = 1;
-      let speed = 2000;
+      let speed = 1000;
       let activeButton = null;
+      let record = 0;
       const scoreDisplay = document.getElementById("score");
       const speedBox = document.getElementById("speed-box");
+      const recordBox = document.getElementById("record-box");
       const buttonContainer = document.getElementById("buttonContainer");
       const clickSound = document.getElementById("clickSound");
       const errorSound = document.getElementById("errorSound");
@@ -129,9 +142,13 @@
       }
 
       function startGame() {
+        if (score > record) {
+          record = score;
+          recordBox.textContent = record;
+        }
         score = 0;
         speedLevel = 1;
-        speed = 2000;
+        speed = 1000;
         scoreDisplay.textContent = "Очки: " + score;
         speedBox.textContent = "1";
         highlightRandomButton();
