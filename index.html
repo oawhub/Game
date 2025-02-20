@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Кликер-игра</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+      }
+      #score {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      #clickButton {
+        font-size: 18px;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Кликер-игра</h1>
+    <p id="score">Очки: 0</p>
+    <button id="clickButton">Кликни меня!</button>
+
+    <script>
+      let score = 0;
+      const scoreDisplay = document.getElementById("score");
+      const clickButton = document.getElementById("clickButton");
+
+      clickButton.addEventListener("click", () => {
+        score++;
+        scoreDisplay.textContent = "Очки: " + score;
+      });
+    </script>
+  </body>
+</html>
