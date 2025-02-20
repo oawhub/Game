@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Кликер-игра</title>
+    <title>Реакция-кликер</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -11,6 +11,7 @@
         margin: 50px;
         background: linear-gradient(to right, #ff9966, #ff5e62);
         color: white;
+        position: relative;
       }
       #score {
         font-size: 30px;
@@ -19,16 +20,16 @@
       }
       .button-container {
         display: grid;
-        grid-template-columns: repeat(3, 100px);
-        grid-template-rows: repeat(3, 100px);
+        grid-template-columns: repeat(5, 104px);
+        grid-template-rows: repeat(5, 104px);
         gap: 10px;
         justify-content: center;
         align-items: center;
       }
       .game-button {
-        width: 100px;
-        height: 100px;
-        font-size: 20px;
+        width: 104px;
+        height: 104px;
+        font-size: 26px;
         cursor: pointer;
         background-color: #4caf50;
         border: none;
@@ -40,17 +41,48 @@
         background-color: yellow;
         color: black;
       }
+      #speed-display {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        text-align: center;
+      }
+      .speed-label {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .speed-box {
+        font-size: 24px;
+        font-weight: bold;
+        width: 80px;
+        height: 50px;
+        background-color: black;
+        color: lime;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        font-family: "Courier New", monospace;
+        animation: pulse 0.5s infinite alternate;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.7;
+        }
+      }
     </style>
   </head>
   <body>
     <h1>Реакция-кликер</h1>
     <p id="score">Очки: 0</p>
-    <div class="button-container">
-      <button class="game-button" id="btn1"></button>
-      <button class="game-button" id="btn2"></button>
-      <button class="game-button" id="btn3"></button>
-      <button class="game-button" id="btn4"></button>
-      <button class="game-button" id="btn5"></button>
+    <div class="button-container" id="buttonContainer"></div>
+    <div id="speed-display">
+      <div class="speed-label">SPEED</div>
+      <div class="speed-box" id="speed-box">1</div>
     </div>
 
     <audio id="clickSound" src="click.mp3"></audio>
@@ -58,12 +90,25 @@
 
     <script>
       let score = 0;
-      let speed = 1000;
+      let speedLevel = 1;
+      let speed = 2000;
       let activeButton = null;
       const scoreDisplay = document.getElementById("score");
-      const buttons = document.querySelectorAll(".game-button");
+      const speedBox = document.getElementById("speed-box");
+      const buttonContainer = document.getElementById("buttonContainer");
       const clickSound = document.getElementById("clickSound");
       const errorSound = document.getElementById("errorSound");
+      let buttons = [];
+
+      function createButtons() {
+        for (let i = 0; i < 25; i++) {
+          let button = document.createElement("button");
+          button.classList.add("game-button");
+          button.dataset.index = i;
+          buttonContainer.appendChild(button);
+          buttons.push(button);
+        }
+      }
 
       function getRandomButton() {
         return buttons[Math.floor(Math.random() * buttons.length)];
@@ -77,10 +122,18 @@
         activeButton.classList.add("active");
       }
 
+      function updateSpeed() {
+        speedLevel = Math.min(50, Math.floor(score / 10) + 1);
+        speed = Math.max(100, 2000 - speedLevel * 38);
+        speedBox.textContent = speedLevel;
+      }
+
       function startGame() {
         score = 0;
-        speed = 1000;
+        speedLevel = 1;
+        speed = 2000;
         scoreDisplay.textContent = "Очки: " + score;
+        speedBox.textContent = "1";
         highlightRandomButton();
         gameLoop();
       }
@@ -92,21 +145,24 @@
         }, speed);
       }
 
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => {
-          if (button === activeButton) {
+      buttonContainer.addEventListener("click", (event) => {
+        if (event.target.classList.contains("game-button")) {
+          if (event.target === activeButton) {
             score++;
             scoreDisplay.textContent = "Очки: " + score;
             clickSound.play();
-            speed = Math.max(300, speed - 50);
+            if (score % 10 === 0) {
+              updateSpeed();
+            }
           } else {
             errorSound.play();
             alert("Ошибка! Игра начинается заново.");
             startGame();
           }
-        });
+        }
       });
 
+      createButtons();
       startGame();
     </script>
   </body>
